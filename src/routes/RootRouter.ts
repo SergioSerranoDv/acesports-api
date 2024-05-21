@@ -2,7 +2,7 @@ import { Request, Response, Router } from "express"
 import { MiddlewareController } from "../middlewares/Authentication"
 import { CategoryRouter } from "./CategoryRouter"
 import { GameRouter } from "./GameRouter"
-
+import { TournamentRouter } from "./TournamentRouter"
 export class RootRouter {
   private static instance: RootRouter
   private router: Router
@@ -14,6 +14,7 @@ export class RootRouter {
     })
     this.router.use("/v1/categories", CategoryRouter.getRouter())
     this.router.use("/v1/games", GameRouter.getRouter())
+    this.router.use("/v1/tournaments", TournamentRouter.getRouter())
   }
   static getRouter(): Router {
     if (!RootRouter.instance) {
