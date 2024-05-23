@@ -6,15 +6,19 @@ import { Tournament } from "../models/Tournament"
 
 export class TournamentController {
   private tournamentRepository: TournamentRespositorie
+  private gameRepository: GameRespositorie
 
   constructor(tournamentRepository: TournamentRespositorie, gameRepository: GameRespositorie) {
     this.tournamentRepository = tournamentRepository
+    this.gameRepository = gameRepository
   }
 
   public createTournament = async (data: Tournament, userId: string): Promise<ApiResponse> => {
     try {
       const { game_id } = data
-      const newTournament = await this.tournamentRepository.createTournament(data, userId)
+      const game = await this.gameRepository.getGameById(game_id)
+      const name = "Torne de " + game?.name || ""
+      const newTournament = await this.tournamentRepository.createTournament(data, name, userId)
       return {
         status: "success",
         code: 201,
@@ -44,7 +48,7 @@ export class TournamentController {
     }
     return brackets
   }
-  public updateTournament = async (data: any) => {
+  public updateBracket = async (data: any) => {
     const { _id, match, winner } = data
     const tournament = await this.tournamentRepository.findTournamentById(_id)
     if (!tournament) {
@@ -64,5 +68,29 @@ export class TournamentController {
     const index = tournament.brackets.findIndex((b) => b.match === match)
     bracket.winner = winner
     tournament.brackets[index] = bracket
+  }
+  public updateTournament = async (
+    tournamentId: string,
+    data: Tournament
+  ): Promise<ApiResponse> => {
+    try {
+      const tournament = await this.tournamentRepository.findByIdAndUpdate(tournamentId, data)
+      if (!tournament) {
+        return {
+          code: 404,
+          status: "error",
+          message: "Tournament not found",
+          data: null,
+        }
+      }
+      return {
+        status: "success",
+        code: 200,
+        message: "Tournament updated successfully",
+        data: tournament,
+      }
+    } catch (error) {
+      return ErrorHandling.handleError(error)
+    }
   }
 }
