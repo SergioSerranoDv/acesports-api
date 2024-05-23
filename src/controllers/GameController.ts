@@ -29,7 +29,27 @@ export class GameController {
       return ErrorHandling.handleError(error)
     }
   }
-
+  public getGameById = async (id: string): Promise<ApiResponse> => {
+    try {
+      const game = await this.gameRespositorie.getGameById(id)
+      if (!game) {
+        return {
+          code: 404,
+          status: "error",
+          data: null,
+          message: "Game not found",
+        }
+      }
+      return {
+        code: 200,
+        status: "success",
+        data: game,
+        message: "Game found successfully",
+      }
+    } catch (error: any) {
+      return ErrorHandling.handleError(error)
+    }
+  }
   public createGame = async (game: any, userId: string): Promise<ApiResponse> => {
     try {
       const newGame = await this.gameRespositorie.createGame({
