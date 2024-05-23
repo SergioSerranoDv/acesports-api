@@ -1,19 +1,13 @@
 import { Tournament, TournamentModel } from "../models/Tournament"
-import { Bracket } from "../interfaces/Bracket"
 
 export interface TournamentRespositorie {
-  createTournament(data: Tournament, brackets: Bracket[], userId: string): Promise<Tournament>
+  createTournament(data: Tournament, userId: string): Promise<Tournament>
   findTournamentById(id: string): Promise<Tournament | null>
 }
 export class TournamentMongoRepositorie implements TournamentRespositorie {
-  async createTournament(
-    data: Tournament,
-    brackets: Bracket[],
-    userId: string
-  ): Promise<Tournament> {
+  async createTournament(data: Tournament, userId: string): Promise<Tournament> {
     const newTournament = new TournamentModel({
       ...data,
-      brackets,
       user: userId,
     })
     return await newTournament.save()
