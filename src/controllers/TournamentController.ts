@@ -33,6 +33,27 @@ export class TournamentController {
       return ErrorHandling.handleError(error)
     }
   }
+  public getTournamentById = async (tournamentId: string): Promise<ApiResponse> => {
+    try {
+      const tournament = await this.tournamentRepository.findTournamentById(tournamentId)
+      if (!tournament) {
+        return {
+          code: 404,
+          status: "error",
+          message: "Tournament not found",
+          data: null,
+        }
+      }
+      return {
+        status: "success",
+        code: 200,
+        message: "Tournament found",
+        data: tournament,
+      }
+    } catch (error) {
+      return ErrorHandling.handleError(error)
+    }
+  }
   public createTournament = async (data: Tournament, userId: string): Promise<ApiResponse> => {
     try {
       const { game_id } = data
