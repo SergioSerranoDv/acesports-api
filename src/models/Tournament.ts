@@ -51,7 +51,8 @@ const TournamentSchema = new Schema<Tournament>(
     },
     quantity_participants: {
       type: Number,
-      required: false,
+      required: true,
+      default: 0,
     },
     brackets: {
       type: [Object],
