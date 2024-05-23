@@ -21,6 +21,7 @@ export class DependencyContainer {
   )
   static gameController: GameController = new GameController(DependencyContainer.gameRepository)
   static tournamentController: TournamentController = new TournamentController(
-    DependencyContainer.tournamentRepository
+    DependencyContainer.tournamentRepository,
+    DependencyContainer.gameRepository
   )
 }
