@@ -17,7 +17,7 @@ export class TournamentController {
     try {
       const { game_id } = data
       const game = await this.gameRepository.getGameById(game_id)
-      const name = "Torne de " + game?.name || ""
+      const name = "Torneo de " + game?.name || ""
       const newTournament = await this.tournamentRepository.createTournament(data, name, userId)
       return {
         status: "success",
