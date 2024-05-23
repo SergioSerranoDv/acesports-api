@@ -1,4 +1,5 @@
 import { TournamentRespositorie } from "../repositories/TournamentRepositorie"
+import { GameRespositorie } from "../repositories/GameRepositorie"
 import { ApiResponse } from "../interfaces/Api"
 import { ErrorHandling } from "../middlewares/ErrorHandling"
 import { Tournament } from "../models/Tournament"
@@ -6,22 +7,14 @@ import { Tournament } from "../models/Tournament"
 export class TournamentController {
   private tournamentRepository: TournamentRespositorie
 
-  constructor(tournamentRepository: TournamentRespositorie) {
+  constructor(tournamentRepository: TournamentRespositorie, gameRepository: GameRespositorie) {
     this.tournamentRepository = tournamentRepository
   }
 
   public createTournament = async (data: Tournament, userId: string): Promise<ApiResponse> => {
     try {
-      const { quantity_participants } = data
-      if (quantity_participants % 2 !== 0) {
-        return {
-          status: "error",
-          code: 400,
-          message: "The quantity of participants must be an even number",
-        }
-      }
-      const brackets = this.generateBrackets(quantity_participants)
-      const newTournament = await this.tournamentRepository.createTournament(data, brackets, userId)
+      const { game_id } = data
+      const newTournament = await this.tournamentRepository.createTournament(data, userId)
       return {
         status: "success",
         code: 201,
