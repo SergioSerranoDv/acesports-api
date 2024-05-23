@@ -12,7 +12,27 @@ export class TournamentController {
     this.tournamentRepository = tournamentRepository
     this.gameRepository = gameRepository
   }
-
+  public getTournamentsByUserId = async (userId: string): Promise<ApiResponse> => {
+    try {
+      const tournaments = await this.tournamentRepository.getTournametsBysUserId(userId)
+      if (!tournaments) {
+        return {
+          code: 404,
+          status: "error",
+          message: "Tournaments not found",
+          data: null,
+        }
+      }
+      return {
+        status: "success",
+        code: 200,
+        message: "Tournaments found",
+        data: tournaments,
+      }
+    } catch (error) {
+      return ErrorHandling.handleError(error)
+    }
+  }
   public createTournament = async (data: Tournament, userId: string): Promise<ApiResponse> => {
     try {
       const { game_id } = data
@@ -29,7 +49,6 @@ export class TournamentController {
       return ErrorHandling.handleError(error)
     }
   }
-
   public generateBrackets(quantityParticipants: number) {
     const brackets = []
     let matchNumber = 1
