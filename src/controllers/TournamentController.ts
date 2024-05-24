@@ -88,26 +88,59 @@ export class TournamentController {
     }
     return brackets
   }
-  public updateBracket = async (data: any) => {
-    const { _id, match, winner } = data
-    const tournament = await this.tournamentRepository.findTournamentById(_id)
-    if (!tournament) {
-      return {
-        code: 404,
-        status: "error",
-        message: "Tournament not found",
+  public updateBracket = async (tournamentId: string, data: any): Promise<ApiResponse> => {
+    const { match, winner, player1, player2 } = data
+    try {
+      const tournament = await this.tournamentRepository.findTournamentById(tournamentId)
+      if (!tournament) {
+        return {
+          code: 404,
+          status: "error",
+          message: "Tournament not found",
+        }
       }
-    }
-    const bracket = tournament.brackets.find((b) => b.match === match)
-    if (!bracket) {
-      return {
-        status: "error",
-        message: "Bracket not found",
+
+      const bracket = tournament.brackets.find((b) => b.match === match)
+      if (!bracket) {
+        return {
+          code: 404,
+          status: "error",
+          message: "Bracket not found",
+        }
       }
+      const index = tournament.brackets.findIndex((b) => b.match === match)
+      if (player1) {
+        bracket.player1 = player1
+      }
+      if (player2) {
+        bracket.player2 = player2
+      }
+      bracket.winner = winner
+      tournament.brackets[index] = bracket
+
+      const nextMatchIndex =
+        Math.floor((match - 1) / 2) + Math.ceil(tournament.quantity_participants / 2)
+
+      if (nextMatchIndex < tournament.brackets.length) {
+        const isPlayer1 = match % 2 !== 0
+        if (isPlayer1) {
+          tournament.brackets[nextMatchIndex].player1 = winner
+        } else {
+          tournament.brackets[nextMatchIndex].player2 = winner
+        }
+      }
+      await this.tournamentRepository.findByIdAndUpdate(tournamentId, {
+        brackets: tournament.brackets,
+      })
+      return {
+        status: "success",
+        code: 200,
+        message: "Bracket updated successfully",
+        data: tournament,
+      }
+    } catch (error) {
+      return ErrorHandling.handleError(error)
     }
-    const index = tournament.brackets.findIndex((b) => b.match === match)
-    bracket.winner = winner
-    tournament.brackets[index] = bracket
   }
   public updateQuantityPlayers = async (
     tournamentId: string,
