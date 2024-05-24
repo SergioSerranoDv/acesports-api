@@ -15,6 +15,7 @@ export class TournamentRouter {
     this.router.post("/new", this.createTournament)
     this.router.put("/update-quantity-players/:id", this.updateQuantityPlayersByTournamentId)
     this.router.put("/update/:id", this.updateTournament)
+    this.router.put("/update-bracket/:id", this.updateTournamentBracket)
   }
   static getRouter(): Router {
     if (!TournamentRouter.instance) {
@@ -143,6 +144,34 @@ export class TournamentRouter {
       }
       const id = req.params.id
       const response = await this.tournamentController.getTournamentById(id)
+      if (response.status === "error") {
+        return res.status(response.code).send({
+          status: "error",
+          message: response.message,
+        })
+      }
+      return res.status(response.code).send({
+        status: response.status,
+        data: response.data,
+        message: response.message,
+      })
+    } catch (error: any) {
+      return res.status(500).send({
+        status: "error",
+        message: error.message,
+      })
+    }
+  }
+  private updateTournamentBracket = async (req: Request, res: Response) => {
+    try {
+      if (!req.user) {
+        return res.status(403).send({
+          message: "unauthorized",
+        })
+      }
+      const tournamentId = req.params.id
+      const data = req.body
+      const response = await this.tournamentController.updateBracket(tournamentId, data)
       if (response.status === "error") {
         return res.status(response.code).send({
           status: "error",
