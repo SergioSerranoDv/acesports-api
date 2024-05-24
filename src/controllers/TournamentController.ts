@@ -109,6 +109,41 @@ export class TournamentController {
     bracket.winner = winner
     tournament.brackets[index] = bracket
   }
+  public updateQuantityPlayers = async (
+    tournamentId: string,
+    data: Tournament
+  ): Promise<ApiResponse> => {
+    try {
+      const { quantity_participants } = data
+      const tournament = await this.tournamentRepository.findTournamentById(tournamentId)
+      if (!tournament) {
+        return {
+          code: 404,
+          status: "error",
+          message: "Tournament not found",
+        }
+      }
+      if (tournament.brackets.length > 0) {
+        await this.tournamentRepository.findByIdAndUpdate(tournamentId, {
+          brackets: [],
+        })
+      }
+      const brackets = this.generateBrackets(quantity_participants)
+      tournament.brackets = brackets
+      const updatedTournament = await this.tournamentRepository.findByIdAndUpdate(
+        tournamentId,
+        tournament
+      )
+      return {
+        status: "success",
+        code: 200,
+        message: "Quantity players updated successfully",
+        data: updatedTournament,
+      }
+    } catch (error) {
+      return ErrorHandling.handleError(error)
+    }
+  }
   public updateTournament = async (
     tournamentId: string,
     data: Tournament
