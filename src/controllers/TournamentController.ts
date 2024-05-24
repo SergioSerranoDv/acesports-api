@@ -130,6 +130,7 @@ export class TournamentController {
       }
       const brackets = this.generateBrackets(quantity_participants)
       tournament.brackets = brackets
+      tournament.quantity_participants = quantity_participants
       const updatedTournament = await this.tournamentRepository.findByIdAndUpdate(
         tournamentId,
         tournament
