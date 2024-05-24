@@ -115,18 +115,19 @@ export class TournamentController {
       if (player2) {
         bracket.player2 = player2
       }
-      bracket.winner = winner
       tournament.brackets[index] = bracket
 
-      const nextMatchIndex =
-        Math.floor((match - 1) / 2) + Math.ceil(tournament.quantity_participants / 2)
-
-      if (nextMatchIndex < tournament.brackets.length) {
-        const isPlayer1 = match % 2 !== 0
-        if (isPlayer1) {
-          tournament.brackets[nextMatchIndex].player1 = winner
-        } else {
-          tournament.brackets[nextMatchIndex].player2 = winner
+      if (bracket.winner !== "" && bracket.winner !== winner) {
+        bracket.winner = winner
+        const nextMatchIndex =
+          Math.floor((match - 1) / 2) + Math.ceil(tournament.quantity_participants / 2)
+        if (nextMatchIndex < tournament.brackets.length) {
+          const isPlayer1 = match % 2 !== 0
+          if (isPlayer1) {
+            tournament.brackets[nextMatchIndex].player1 = winner
+          } else {
+            tournament.brackets[nextMatchIndex].player2 = winner
+          }
         }
       }
       await this.tournamentRepository.findByIdAndUpdate(tournamentId, {
