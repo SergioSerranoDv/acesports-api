@@ -3,8 +3,8 @@ import { auth } from "express-oauth2-jwt-bearer"
 import { NextFunction, Request, Response } from "express"
 
 export const jwtCheck = auth({
-  audience: "http://localhost:5000/",
-  issuerBaseURL: "https://dev-kllowhtqsd8qirzp.us.auth0.com/",
+  audience: "https://acesports.wango.pro",
+  issuerBaseURL: "https://dev-3salztzbb4ux5rf3.us.auth0.com/",
   tokenSigningAlg: "RS256",
 })
 declare global {
